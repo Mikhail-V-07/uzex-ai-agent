@@ -69,6 +69,27 @@ def create_database():
         )
     """)
 
+    
+    con.execute("""
+        CREATE OR REPLACE VIEW deals_financial AS
+        SELECT
+            d.*,
+            c."Валюта" AS currency,
+            CASE
+                WHEN c."Валюта" = 'Доллар США'
+                    THEN d.amount * r."Курс"
+                WHEN c."Валюта" = 'Узбекский сум'
+                    THEN d.amount
+                ELSE NULL
+            END AS amount_uzs
+        FROM deals d
+        JOIN contracts c
+            ON d."Номер контракта" = c."Номер контракта"
+        JOIN usd_rates r
+            ON d."Дата сделки" = r."Дата"
+    """)
+
+
     print("Проверка таблиц:")
 
     for table in ["deals", "contracts", "participants", "brokers", "usd_rates"]:
