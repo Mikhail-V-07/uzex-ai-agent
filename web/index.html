@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>UZEX Spot AI — Интеллектуальный агент биржевых сделок</title>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo">UZEX<span>AI</span></div>
+      <div>
+        <div class="title" data-i18n="appTitle">ИИ-агент реестра биржевых сделок spot.uzex.uz</div>
+        <div class="subtitle" id="statsline">500 000 сделок · 6 616 контрактов · 14 392 участника · 120 брокеров · 2022–2026</div>
+      </div>
+    </div>
+
+    <nav class="nav-tabs" role="tablist">
+      <button class="nav-tab active" data-tab="chat" data-i18n="tabChat">💬 ИИ-Агент (Вопрос-ответ)</button>
+      <button class="nav-tab" data-tab="dashboard" data-i18n="tabDashboard">📊 Аналитика и Реестр</button>
+      <button class="nav-tab" data-tab="architecture" data-i18n="tabArch">🛡️ О решении и Верификация</button>
+    </nav>
+
+    <div class="actions">
+      <div class="lang-switch" role="group" aria-label="Language">
+        <button class="lang-btn active" data-lang="ru">RU</button>
+        <button class="lang-btn" data-lang="uz">UZ</button>
+      </div>
+      <button id="clearBtn" class="ghost" title="Очистить диалог" data-i18n="btnNewChat">Новый диалог</button>
+    </div>
+  </header>
+
+  <!-- ==================== TAB 1: AI AGENT CHAT ==================== -->
+  <main id="tab-chat" class="tab-panel active layout">
+    <aside class="sidebar">
+      <div class="side-section">
+        <div class="side-header-row">
+          <div class="side-title" data-i18n="examplesTitle">Примеры вопросов (RU / UZ)</div>
+          <div class="filter-pills">
+            <button class="pill active" data-qfilter="all" data-i18n="filterAll">Все</button>
+            <button class="pill" data-qfilter="ru">RU</button>
+            <button class="pill" data-qfilter="uz">UZ</button>
+            <button class="pill" data-qfilter="guard" title="Проверка защиты от галлюцинаций">🛡️</button>
+          </div>
+        </div>
+        <div class="examples" id="examples"></div>
+      </div>
+
+      <div class="side-section guarantee">
+        <div class="side-title" data-i18n="guaranteeTitle">Гарантия точности (0% галлюцинаций)</div>
+        <ul>
+          <li data-i18n="g1"><b>Только по данным DuckDB:</b> каждое число в ответе вычисляется реальным SQL-запросом по 500 000 сделкам.</li>
+          <li data-i18n="g2"><b>100% нормализация:</b> марки, сорта, классы и размеры извлечены даже из текстовых названий контрактов.</li>
+          <li data-i18n="g3"><b>Фонетический поиск RU↔UZ:</b> находит компании и брокеров независимо от латиницы, кириллицы и кавычек.</li>
+          <li data-i18n="g4"><b>Numeric Grounding Verifier:</b> автоматическая сверка каждого числа в тексте ответа с результатами SQL.</li>
+        </ul>
+      </div>
+    </aside>
+
+    <section class="chat-pane">
+      <div id="messages" class="messages">
+        <div class="welcome" id="welcome">
+          <div class="welcome-badge">SPOT.UZEX.UZ · 2022–2026 · ZERO-HALLUCINATION ENGINE</div>
+          <h1 data-i18n="welcomeTitle">Задайте любой вопрос о биржевых сделках на русском или узбекском</h1>
+          <p data-i18n="welcomeDesc">
+            Агент понимает русский и узбекский языки (латиницу и кириллицу), автоматически находит компании,
+            брокеров, товары, марки и коды ТН ВЭД, выполняет точные SQL-запросы по 500 000 сделкам и показывает,
+            на каких данных основан каждый ответ.
+          </p>
+          <div class="schema-chips">
+            <span>📦 <b>deals</b> (500 000)</span>
+            <span>📄 <b>contracts</b> (6 616)</span>
+            <span>🏢 <b>participants</b> (14 392)</span>
+            <span>🤝 <b>brokers</b> (120)</span>
+            <span>💵 <b>usd_rates</b> (1 765 дней)</span>
+            <span>🏷️ <b>41 товар · 14 регионов</b></span>
+          </div>
+        </div>
+      </div>
+
+      <form id="askForm" class="composer">
+        <textarea
+          id="qInput"
+          rows="1"
+          placeholder="Спросите на русском или узбекском (например: Сколько сделок по бензину АИ-92 было в 2024 году?)…"
+          required
+        ></textarea>
+        <button id="sendBtn" type="submit">
+          <span data-i18n="btnSend">Спросить</span>
+          <span class="kbd">↵</span>
+        </button>
+      </form>
+    </section>
+  </main>
+
+  <!-- ==================== TAB 2: ANALYTICS DASHBOARD ==================== -->
+  <section id="tab-dashboard" class="tab-panel page-container">
+    <div class="dash-header">
+      <div>
+        <h2 data-i18n="dashTitle">Аналитический обзор реестра сделок UZEX (2022–2026)</h2>
+        <p class="muted" data-i18n="dashSub">Все показатели рассчитаны напрямую из денормализованной базы DuckDB. Нажмите на любой товар, регион или компанию, чтобы задать вопрос ИИ-агенту.</p>
+      </div>
+      <button id="refreshDashBtn" class="ghost" data-i18n="btnRefresh">↻ Обновить</button>
+    </div>
+
+    <div class="kpi-grid" id="kpiGrid">
+      <!-- Populated by app.js -->
+    </div>
+
+    <div class="dash-grid-2">
+      <div class="card">
+        <div class="card-title" data-i18n="chartYearsTitle">Динамика оборота и сделок по годам (2022–2026)</div>
+        <div id="yearsContainer" class="chart-list"></div>
+      </div>
+      <div class="card">
+        <div class="card-title" data-i18n="chartStatusTitle">Распределение сделок по статусам и дисциплине</div>
+        <div id="statusContainer" class="chart-list"></div>
+      </div>
+    </div>
+
+    <div class="dash-grid-2">
+      <div class="card">
+        <div class="card-title" data-i18n="chartProductsTitle">Топ-12 биржевых товаров по сумме сделок (трлн сум)</div>
+        <div id="productsContainer" class="chart-list"></div>
+      </div>
+      <div class="card">
+        <div class="card-title" data-i18n="chartRegionsTitle">Регионы складской отгрузки по сумме сделок</div>
+        <div id="regionsContainer" class="chart-list"></div>
+      </div>
+    </div>
+
+    <div class="dash-grid-2">
+      <div class="card">
+        <div class="card-title" data-i18n="chartSellersTitle">Топ-10 крупнейших продавцов (по обороту)</div>
+        <div id="sellersContainer" class="table-scroll"></div>
+      </div>
+      <div class="card">
+        <div class="card-title" data-i18n="chartBuyersTitle">Топ-10 крупнейших покупателей (по обороту)</div>
+        <div id="buyersContainer" class="table-scroll"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== TAB 3: SOLUTION & VERIFICATION ==================== -->
+  <section id="tab-architecture" class="tab-panel page-container">
+    <div class="arch-hero card">
+      <div class="welcome-badge">ОПИСАНИЕ РЕШЕНИЯ · АРХИТЕКТУРА И ВЕРИФИКАЦИЯ ОТВЕТОВ</div>
+      <h2>Как устроен UZEX Spot AI и почему он не выдумывает ответы</h2>
+      <p class="muted">
+        Архитектура разработана специально под требования конкурса: <b>точная аналитика по 500 000 сделкам</b>,
+        <b>двуязычность (RU / UZ латиница и кириллица)</b>, <b>время ответа 2–7 секунд</b> (при лимите 90 сек) и
+        <b>строгая верификация каждого числа против галлюцинаций</b>.
+      </p>
+    </div>
+
+    <div class="arch-pipeline">
+      <div class="pipe-step">
+        <div class="pipe-num">01</div>
+        <h3>Каноническая нормализация и DuckDB</h3>
+        <p>
+          Все 9 CSV-файлов (500 000 сделок, 6 616 контрактов, 14 392 участника, 120 брокеров, 1 765 курсов USD)
+          объединены в колоночную БД <b>DuckDB</b>. Решена ключевая проблема сырых данных: когда в карточке контракта
+          поля <code>Марка</code>, <code>Сорт</code>, <code>Класс</code> или <code>Размер</code> пустые, но указаны внутри
+          текстового названия (например, <i>«Бензин АИ-92»</i>, <i>«Мука пшеничная В/С»</i>, <i>«Арматура А500С Ø12 мм»</i>),
+          детерминированный нормализатор <code>src/normalize.py</code> извлекает <b>100% атрибутов по всем 697 комбинациям без единого пропуска</b>.
+        </p>
+      </div>
+      <div class="pipe-step">
+        <div class="pipe-num">02</div>
+        <h3>Кросс-скриптовый и фонетический индекс (RU ↔ UZ)</h3>
+        <p>
+          Построен поисковый индекс <code>entity_index</code> (14 553 сущности) с двумя ключами:
+          <code>translit_key</code> (единая транслитерация кириллицы/латиницы, очистка кавычек и ОПФ <i>MChJ, ООО, ҚК, ХК, АЖ</i>)
+          и <code>phonetic_key</code> (унификация узбекских/русских фонетических пар <code>q/k</code>, <code>h/x</code>, <code>o‘/u/o</code>, <code>ts/s</code>)
+          + метрика <b>Jaro-Winkler</b>. Запрос <i>«Сотото Металл»</i> мгновенно находит <code>"SOTO‘TO METALL" MCHJ (ИНН 938605827)</code>.
+        </p>
+      </div>
+      <div class="pipe-step">
+        <div class="pipe-num">03</div>
+        <h3>Агентное планирование + SQLGlot AST Sandbox</h3>
+        <p>
+          Агент использует <b>Gemini Function Calling</b> (<code>find_entity</code> + <code>run_sql</code>) с температурой <code>0.0</code>
+          и встроенным каталогом всех 41 семейств товаров и их марок. Каждый SQL-запрос перед выполнением проходит
+          AST-валидацию через <b>SQLGlot</b> (разрешён только read-only <code>SELECT</code> по таблицам реестра).
+          Вся математика (суммы, средневзвешенные цены, доли, ранги) выполняется внутри DuckDB за <b>5–25 мс</b>.
+        </p>
+      </div>
+      <div class="pipe-step">
+        <div class="pipe-num">04</div>
+        <h3>Numeric Grounding Verifier (Защита от галлюцинаций)</h3>
+        <p>
+          Перед отправкой ответа пользователю модуль <code>ungrounded_numbers()</code> извлекает все числа и множители
+          (<i>тыс., млн, млрд, трлн, %</i>) из текста ответа и сверяет каждое число с фактическими ячейками,
+          возвращёнными SQL-запросами. Если обнаружено хотя бы одно число, не подтверждённое БД, агент автоматически
+          отправляет запрос на самокоррекцию. Если товара или сущности нет в БД (например, <i>золото, нефть, данные за 2021 год</i>),
+          агент прямо сообщает об отсутствии данных.
+        </p>
+      </div>
+    </div>
+
+    <div class="dash-grid-2">
+      <div class="card">
+        <div class="card-title">Ключевые особенности датасета, учтённые в системе</div>
+        <ul class="arch-list">
+          <li><b>Двуязычные регионы:</b> в <code>deals/participants/brokers</code> регионы записаны на узбекской латинице с типографским апострофом (<code>Farg‘ona viloyati</code>), а в <code>contracts</code> — на русском (<code>Ферганская область</code>). В БД добавлены оба поля (<code>region</code> и <code>region_ru</code>) во все таблицы.</li>
+          <li><b>Двойные валюты (UZS и USD):</b> 493 410 внутренних сделок заключены в <code>UZS</code>, а 6 590 экспортных сделок (<i>Катод медный</i> и <i>Пряжа хлопчатобумажная</i>) — в <code>USD</code>. Поле <code>amount_uzs</code> автоматически конвертирует USD по курсу <code>usd_rates</code> на дату сделки, а по валютным товарам агент также показывает оригинальную сумму в USD.</li>
+          <li><b>Разные единицы измерения одного товара:</b> <i>Бензин</i> торгуется в <code>тоннах</code> и <code>литрах</code>, а <i>Дизельное топливо</i> — в <code>тоннах</code> и <code>килограммах</code>. Агент никогда не складывает тонны с литрами без группировки по <code>unit</code>.</li>
+          <li><b>Контракты и участники без сделок:</b> из 6 616 контрактов по 133 контрактам нет сделок; из 14 000 покупателей у 3 покупателей (ИНН <code>934519810</code>, <code>937876670</code>, <code>975709868</code>) 0 сделок.</li>
+          <li><b>Дисциплина оплаты и поставки:</b> просрочка оплаты (<code>is_late_payment</code>) = <b>0 сделок</b>; просрочка поставки (<code>is_late_delivery</code>) = <b>17 805 сделок</b>.</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Методика проверки и тестирования (Evaluation Suite)</div>
+        <ul class="arch-list">
+          <li><b>Автоматический аудит нормализации:</b> скрипт проверяет все 697 уникальных комбинаций карточек контрактов и названий товаров — 0 пустых значений после нормализации.</li>
+          <li><b>Двуязычный бенчмарк (30+ вопросов RU / UZ-Latin / UZ-Cyrillic):</b> включает простые агрегации, вопросы с подвохом (марки внутри текста, тонны+литры, компании на кириллице, контракты без сделок, курс доллара) и вопросы по отсутствующим данным (золото, нефть, директор компании, ноябрь 2026).</li>
+          <li><b>Отказоустойчивый пул моделей (Multi-Key + Multi-Model Failover):</b> автоматическая балансировка между ключами Gemini API и быстрыми моделями семейства Gemini Flash гарантирует ответ за <b>2–8 секунд</b> (при лимите регламента 90 секунд) даже при пиковой нагрузке.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>

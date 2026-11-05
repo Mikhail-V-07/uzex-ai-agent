@@ -1,0 +1,18 @@
+[build]
+  publish = "web"
+  command = "echo 'Static frontend ready'"
+
+# Allow /static/* paths used by FastAPI to work identically on Netlify static hosting
+[[redirects]]
+  from = "/static/*"
+  to = "/:splat"
+  status = 200
+
+# Proxy /api/* requests from Netlify to your running Python + DuckDB backend
+# Replace BACKEND_URL_HERE with your Cloudflare Tunnel / HuggingFace Space / Railway URL
+# Example: to = "https://your-backend-url.trycloudflare.com/api/:splat"
+[[redirects]]
+  from = "/api/*"
+  to = "https://https://breach-adam-crew-wiley.trycloudflare.com/api/:splat"
+  status = 200
+  force = true
