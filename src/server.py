@@ -32,9 +32,18 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(mess
 log = logging.getLogger("uzex")
 
 if not DB_PATH.exists():
-    from build_db import build, DEFAULT_DATA
+    gz_path = Path(str(DB_PATH) + ".gz")
+    if gz_path.exists():
+        import gzip
+        import shutil
 
-    build(DEFAULT_DATA, DB_PATH)
+        DB_PATH.parent.mkdir(parents=True, exist_ok=True)
+        with gzip.open(gz_path, "rb") as f_in, open(DB_PATH, "wb") as f_out:
+            shutil.copyfileobj(f_in, f_out)
+    else:
+        from build_db import build, DEFAULT_DATA
+
+        build(DEFAULT_DATA, DB_PATH)
 
 db = DB()
 agent = Agent(db)

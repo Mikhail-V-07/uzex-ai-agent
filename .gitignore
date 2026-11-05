@@ -21,6 +21,7 @@ data/*.parquet
 data/*.json
 data/*.db
 data/*.duckdb
+!data/uzex.duckdb.gz
 
 # Databases
 *.sqlite

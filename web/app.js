@@ -20,9 +20,12 @@ const I18N = {
   ru: {
     appTitle: "ИИ-агент реестра биржевых сделок spot.uzex.uz",
     statusOnline: "DuckDB Online",
-    tabChat: "ИИ-Агент (Чат)",
-    tabDashboard: "Аналитика и Реестр",
-    tabArch: "О решении и Верификация",
+    tabChat: "ИИ-Агент",
+    tabDashboard: "Аналитика",
+    tabArch: "О решении",
+    tabChatMobile: "Чат с ИИ",
+    tabDashboardMobile: "Аналитика",
+    tabArchMobile: "О решении",
     btnNewChat: "Новый диалог",
     examplesTitle: "Примеры вопросов",
     mobileExamplesLabel: "Примеры:",
@@ -90,9 +93,12 @@ const I18N = {
   uz: {
     appTitle: "spot.uzex.uz birja bitimlari reyestri AI-agenti",
     statusOnline: "DuckDB Faol",
-    tabChat: "AI-Agent (Chat)",
-    tabDashboard: "Tahlil va Reyestr",
-    tabArch: "Yechim va Tekshiruv",
+    tabChat: "AI-Agent",
+    tabDashboard: "Tahlil",
+    tabArch: "Yechim",
+    tabChatMobile: "AI Chat",
+    tabDashboardMobile: "Tahlil",
+    tabArchMobile: "Yechim",
     btnNewChat: "Yangi suhbat",
     examplesTitle: "Namuna savollar",
     mobileExamplesLabel: "Namunalar:",
@@ -361,7 +367,10 @@ inputEl.addEventListener("input", () => {
 
 clearBtn.addEventListener("click", () => {
   history.length = 0;
-  messagesEl.innerHTML = "";
+  messagesEl.querySelectorAll(".msg").forEach((m) => m.remove());
+  const w = document.getElementById("welcome");
+  if (w) w.style.display = "";
+  messagesEl.scrollTop = 0;
   switchTab("chat");
 });
 
@@ -370,7 +379,7 @@ formEl.addEventListener("submit", async (e) => {
   const q = inputEl.value.trim();
   if (!q) return;
   const w = document.getElementById("welcome");
-  if (w) w.remove();
+  if (w) w.style.display = "none";
 
   inputEl.value = "";
   inputEl.style.height = "auto";

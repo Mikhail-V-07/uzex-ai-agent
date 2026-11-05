@@ -14,7 +14,7 @@
   <div class="bg-glow bg-glow-2"></div>
 
   <header class="topbar">
-    <div class="topbar-main">
+    <div class="topbar-row">
       <div class="brand">
         <div class="logo">
           <span class="logo-dot"></span>
@@ -25,6 +25,21 @@
           <div class="subtitle" id="statsline">500 000 сделок · 6 616 контрактов · 14 392 участника · 120 брокеров · 2022–2026</div>
         </div>
       </div>
+
+      <nav class="nav-tabs desktop-tabs" role="tablist">
+        <button type="button" class="nav-tab active" data-tab="chat">
+          <span class="tab-icon">💬</span>
+          <span data-i18n="tabChat">ИИ-Агент</span>
+        </button>
+        <button type="button" class="nav-tab" data-tab="dashboard">
+          <span class="tab-icon">📊</span>
+          <span data-i18n="tabDashboard">Аналитика</span>
+        </button>
+        <button type="button" class="nav-tab" data-tab="architecture">
+          <span class="tab-icon">🛡️</span>
+          <span data-i18n="tabArch">О решении</span>
+        </button>
+      </nav>
 
       <div class="actions">
         <div class="status-pill" title="DuckDB + Gemini Flash Connected">
@@ -39,18 +54,19 @@
       </div>
     </div>
 
-    <nav class="nav-tabs" role="tablist">
+    <!-- Mobile segmented tabs -->
+    <nav class="nav-tabs mobile-tabs" role="tablist">
       <button type="button" class="nav-tab active" data-tab="chat">
         <span class="tab-icon">💬</span>
-        <span data-i18n="tabChat">ИИ-Агент (Чат)</span>
+        <span data-i18n="tabChatMobile">Чат с ИИ</span>
       </button>
       <button type="button" class="nav-tab" data-tab="dashboard">
         <span class="tab-icon">📊</span>
-        <span data-i18n="tabDashboard">Аналитика и Реестр</span>
+        <span data-i18n="tabDashboardMobile">Аналитика</span>
       </button>
       <button type="button" class="nav-tab" data-tab="architecture">
         <span class="tab-icon">🛡️</span>
-        <span data-i18n="tabArch">О решении и Верификация</span>
+        <span data-i18n="tabArchMobile">О решении</span>
       </button>
     </nav>
   </header>
@@ -83,38 +99,32 @@
     </aside>
 
     <section class="chat-pane">
-      <!-- Mobile quick questions strip -->
-      <div class="mobile-prompts-bar">
-        <div class="mobile-prompts-label" data-i18n="mobileExamplesLabel">Быстрые вопросы:</div>
-        <div class="mobile-prompts-scroll" id="mobileExamples"></div>
-      </div>
-
       <div id="messages" class="messages">
         <div class="welcome" id="welcome">
           <div class="welcome-badge" data-i18n="welcomeBadge">SPOT.UZEX.UZ · 2022–2026 · ZERO-HALLUCINATION ENGINE</div>
           <h1 data-i18n="welcomeTitle">Задайте любой вопрос о биржевых сделках на русском или узбекском</h1>
-          <p data-i18n="welcomeDesc">
+          <p class="welcome-desc" data-i18n="welcomeDesc">
             Агент понимает русский и узбекский языки (латиницу и кириллицу), автоматически находит компании,
             брокеров, товары, марки и коды ТН ВЭД, выполняет точные SQL-запросы по 500 000 сделкам и показывает,
             на каких данных основан каждый ответ.
           </p>
 
           <div class="schema-chips">
-            <span>📦 <b>deals</b> (<span data-i18n="chipDeals">500 000 сделок</span>)</span>
-            <span>📄 <b>contracts</b> (<span data-i18n="chipContracts">6 616 контрактов</span>)</span>
-            <span>🏢 <b>participants</b> (<span data-i18n="chipParticipants">14 392 участника</span>)</span>
-            <span>🤝 <b>brokers</b> (<span data-i18n="chipBrokers">120 брокеров</span>)</span>
-            <span>💵 <b>usd_rates</b> (<span data-i18n="chipRates">1 765 курсов USD</span>)</span>
+            <span>📦 <b>deals</b> · <span data-i18n="chipDeals">500 000 сделок</span></span>
+            <span>📄 <b>contracts</b> · <span data-i18n="chipContracts">6 616 контрактов</span></span>
+            <span>🏢 <b>participants</b> · <span data-i18n="chipParticipants">14 392 участника</span></span>
+            <span>🤝 <b>brokers</b> · <span data-i18n="chipBrokers">120 брокеров</span></span>
+            <span class="hide-xs">💵 <b>usd_rates</b> · <span data-i18n="chipRates">1 765 курсов USD</span></span>
             <span>🏷️ <b data-i18n="chipCatalog">41 товар · 14 регионов</b></span>
           </div>
 
-          <div class="welcome-quick-title" data-i18n="welcomeQuickTitle">Попробуйте нажать на вопрос:</div>
+          <div class="welcome-quick-title" data-i18n="welcomeQuickTitle">Нажмите на пример вопроса для быстрой проверки:</div>
           <div class="welcome-quick-grid" id="welcomeQuickGrid"></div>
         </div>
       </div>
 
-      <form id="askForm" class="composer">
-        <div class="composer-inner">
+      <div class="composer-wrap">
+        <form id="askForm" class="composer">
           <textarea
             id="qInput"
             rows="1"
@@ -125,8 +135,8 @@
             <span data-i18n="btnSend">Спросить</span>
             <span class="kbd">↵</span>
           </button>
-        </div>
-      </form>
+        </form>
+      </div>
     </section>
   </main>
 
@@ -196,7 +206,7 @@
           Все 9 CSV-файлов (500 000 сделок, 6 616 контрактов, 14 392 участника, 120 брокеров, 1 765 курсов USD)
           объединены в колоночную БД <b>DuckDB</b>. Когда в карточке контракта поля <code>Марка</code>, <code>Сорт</code>,
           <code>Класс</code> или <code>Размер</code> пустые, но указаны внутри текста названия (<i>«Бензин АИ-92»</i>,
-          <i>«Мука пшеничная В/С»</i>, <i>«Арматура А500С Ø12 мм»</i>), нормализатор <code>src/normalize.py</code>
+          <i>«Мука пшеничная В/С»</i>), нормализатор <code>src/normalize.py</code>
           извлекает <b>100% атрибутов по всем 697 комбинациям без единого пропуска</b>.
         </p>
       </div>
