@@ -37,11 +37,11 @@ ROOT = Path(__file__).resolve().parent.parent
 DB_PATH = Path(os.getenv("UZEX_DB_PATH", str(ROOT / "data" / "uzex.duckdb")))
 
 PRIMARY_MODELS = [
-    "gemini-3-flash-preview",
     "gemini-3.1-flash-lite",
     "gemini-3.1-flash-lite-preview",
 ]
 FALLBACK_MODELS = [
+    "gemini-3-flash-preview",
     "gemini-3.6-flash",
     "gemini-3.5-flash",
 ]
@@ -657,8 +657,12 @@ class Agent:
                 except Exception as e:  # noqa: BLE001
                     last = e
                     estr = str(e)
-                    # Shorter cooldown for transient 503/504, longer for 429 rate limit
-                    cd = 25.0 if "429" in estr or "RESOURCE_EXHAUSTED" in estr else 6.0
+                    if "PerDay" in estr or "exceeded your current quota" in estr:
+                        cd = 1800.0
+                    elif "429" in estr or "RESOURCE_EXHAUSTED" in estr:
+                        cd = 20.0
+                    else:
+                        cd = 6.0
                     self._cooldown_until[(ci, model)] = time.time() + cd
                     continue
             if wave < 2:

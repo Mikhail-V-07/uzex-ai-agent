@@ -58,6 +58,16 @@ def index():
     return FileResponse(str(WEB / "index.html"))
 
 
+@app.get("/style.css")
+def style_css():
+    return FileResponse(str(WEB / "style.css"), media_type="text/css")
+
+
+@app.get("/app.js")
+def app_js():
+    return FileResponse(str(WEB / "app.js"), media_type="application/javascript")
+
+
 @app.get("/api/health")
 def health():
     return {"ok": True, "models": agent.models, "endpoints": len(agent._endpoints)}
@@ -209,7 +219,8 @@ async def ask(request: Request):
         with _sem:
             try:
                 res = agent.ask(question, history=history, on_event=q.put)
-                q.put({"type": "final", **res})
+                q.put({"type": "done", "result": res, **res})
+                q.put({"type": "final", "result": res, **res})
                 _log(
                     {
                         "ts": time.time(),

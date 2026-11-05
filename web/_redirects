@@ -1,0 +1,2 @@
+/static/*  /:splat  200
+/api/*  https://breach-adam-crew-wiley.trycloudflare.com/api/:splat  200!
